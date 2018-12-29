@@ -1,4 +1,4 @@
-# CO-Marijuana-Dataset-Development<br>
+# CO-Marijuana-Dataset<br>
 ## Purpose
 ## Data Collection and Processing Methodology<br>
 1.<br>
