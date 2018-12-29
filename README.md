@@ -8,15 +8,15 @@
 The CO-Marijuana-Dataset consists of 4+ years of Colorado Marijuana sales (medical and recreational) since the end of Colorado prohibition in January 2014 (beginning of recreational sales under CO Amendment 64).<br>
 
 The dataset consists of xxx observations of 11 features:<br>
-State<br>
-County<br>
-Latitude<br>
-Longitude<br>
-Region<br>
-Year<br>
-Population<br>
-Med_Sales<br>
-Rec_Sales<br>
+State - COLORADO<br>
+County - Colorado county name<br>
+Latitude - Latitude<br>
+Longitude - Longtitude<br>
+Region - Somewhat arbitrary assignment of county into NE, NW, SE, SW regions<br>
+Year - Year<br>
+Population - County Population<br>
+Med_Sales - Annual Medical Marijuana Sales by County<br>
+Rec_Sales - Annual Recreational Marijuana Sales by County<br>
 med_sales_per_citizen<br>
 rec_sales_per_citizen<br>
 
