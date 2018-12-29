@@ -1,5 +1,4 @@
 # Colorado Marijuana Project
-David Martinez
 
 ## Purpose of Project:<br>
 1.<br>
