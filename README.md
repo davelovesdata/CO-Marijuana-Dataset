@@ -1,4 +1,4 @@
-# CO_Marijuana_Project
+# Colorado Marijuana Project
 
 ## Purpose of Project:<br>
 1.<br>
