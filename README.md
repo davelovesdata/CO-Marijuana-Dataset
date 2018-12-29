@@ -1,8 +1,5 @@
 # CO-Marijuana-Dataset-Development<br>
-## Framing the Question (purpose):<br>
-1.<br>
-2.<br>
-3.<br>
+## Purpose
 ## Data Collection and Processing Methodology<br>
 1.<br>
 2.<br>
