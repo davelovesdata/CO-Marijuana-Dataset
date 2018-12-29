@@ -1,4 +1,4 @@
-# CO-Marijuana_Project
+# CO_Marijuana_Project
 
 Purpose of Project:<br>
 1.<br>
