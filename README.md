@@ -1,3 +1,0 @@
-# CO-Marijuana_Project
-
-This is a ...
