@@ -1,4 +1,4 @@
-# Colorado Marijuana Project<br>
+# Colorado Marijuana Project Dataset<br>
 ## Framing the Question (purpose):<br>
 1.<br>
 2.<br>
