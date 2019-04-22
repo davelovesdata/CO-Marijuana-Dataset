@@ -1,0 +1,160 @@
+---
+title: "Building the Colorado County Marijuana Dataset"
+author: "David Martinez"
+date: "April 12, 2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<http://rmarkdown.rstudio.com>
+<https://www.analyticsvidhya.com/blog/2019/04/8-useful-r-packages-data-science/>
+
+
+```{r}
+#dependencies
+library("tidyverse")
+library("tidyr")
+library("readxl")
+library("DataExplorer")
+library("reshape2")
+```
+
+```{r}
+#gather sales and tax data
+sales_mj <- read_xlsx("CO_County_Sales_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
+taxes_mj <- read_xlsx("CO_County_Taxes_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
+
+co_mj <- merge(sales_mj, taxes_mj)
+
+co_mj <- subset(co_mj, Year < "2018")
+
+rm(sales_mj)
+rm(taxes_mj)
+
+summary(co_mj)
+
+```
+
+
+```{r}
+#retrieve file from https://storage.googleapis.com/co-publicdata/profiles-county.csv
+housing_demog <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/profiles-county.csv", col_names = TRUE, col_types = NULL))
+
+#subset to retain only 2014-2017 data
+housing_demog <- subset(housing_demog, year >= "2014" & year <= "2017")
+
+#subset to retain only county information - colorado state information is stripped out
+housing_demog <- subset(housing_demog, countyfips > "0")
+
+#remove first column as it provides no value for this exercise
+housing_demog <- housing_demog[,-1]
+
+CCMDs <- cbind(co_mj, housing_demog)
+
+View(CCMDs)
+
+rm(co_mj)
+rm(housing_demog)
+
+summary(CCMDs)
+```
+
+```{r}
+#https://storage.googleapis.com/co-publicdata/household-county.csv
+pop_demog <- read_csv("https://storage.googleapis.com/co-publicdata/household-county.csv", col_names = TRUE, col_types = NULL)
+
+pop_demog <- subset(pop_demog, year >= "2014" & year <= "2017")
+
+#subset to retain only county information - colorado state information is stripped out
+pop_demog <- subset(pop_demog, area_code > "0")
+pop_demog <- subset(pop_demog, household_type_id != "0")
+pop_demog <- subset(pop_demog, age_group_id != "0")
+
+pop_demog2 <- spread(pop_demog, key = 'age_group_description', value= 'total_households')
+
+pop_demog2 <- pop_demog2[,-c(1,4,6)]
+
+library(data.table)
+pop_demog3 <- setDT(pop_demog2)[, lapply(.SD, function(x) unique(na.omit(x))), by = "household_type_description"]
+
+#pop_demog3 <- setDT(pop_demog3)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
+
+View(pop_demog)
+View(pop_demog2)
+View(pop_demog3)
+
+```
+
+```{r}
+test <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/race-estimates-county.csv", col_names = TRUE, col_types = NULL))
+test <- arrange_all(test)
+test <- test[,-1]
+
+test <- subset(test, year >= "2014" & year <= "2017")
+
+test <- spread(test, key="race", value="count")
+
+test <- test[, -9]
+
+View(test)
+```
+
+```{r}
+
+test2 <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/race-estimates-county.csv", col_names = TRUE, col_types = NULL))
+
+test2 <- arrange_all(test2)
+
+test2 <- test2[, -1]
+
+test2 <- subset(test2, year >= 2014 & year <= 2017)
+
+#test2 <- subset(test2, age >= 21 & age <= 75)
+
+test2 <- subset(test2, race != "Total")
+
+test2$sex <- factor(test2$sex)
+test2$race <- factor(test2$race)
+
+summary(test2)
+
+test3 <- spread(test2, key="race", value="count")
+#test4 <- spread(test2, key="sex", value="count")
+
+test3$age <- cut(test3$age, breaks=c(0, 21, 30, 40, 50, 60, 90), include.lowest = TRUE)
+
+summary(test3)
+
+View(test2)
+View(test3)
+#View(test4)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
