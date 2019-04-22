@@ -3,6 +3,7 @@
 ## Data Collection and Processing Methodology<br>
 1.<br>
 2.<br>
+3.<br>
 
 ## Dataset Description
 The CO-Marijuana-Dataset consists of 4+ years of Colorado Marijuana sales (medical and recreational) since the end of Colorado prohibition in January 2014 (beginning of recreational sales under CO Amendment 64).<br>
@@ -25,5 +26,6 @@ rec_sales_per_citizen<br>
 .
 .
 ## Visualizations
+## MLR
 ## External Sources
 ## References
