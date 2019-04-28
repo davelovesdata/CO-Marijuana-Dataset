@@ -32,6 +32,8 @@ taxes_mj <- read_xlsx("CO_County_Taxes_2014_2018.xlsx", sheet = "aggregate", ran
 co_mj <- merge(sales_mj, taxes_mj)
 
 co_mj <- subset(co_mj, Year < "2018")
+nr_mj <- subset(co_mj, County == "Not Reported")
+co_mj <- subset(co_mj, County != "Not Reported")
 
 rm(sales_mj)
 rm(taxes_mj)
@@ -72,78 +74,46 @@ pop_demog <- subset(pop_demog, year >= "2014" & year <= "2017")
 
 #subset to retain only county information - colorado state information is stripped out
 pop_demog <- subset(pop_demog, area_code > "0")
-pop_demog <- subset(pop_demog, household_type_id != "0")
+pop_demog <- subset(pop_demog, household_type_id <= "0")
 pop_demog <- subset(pop_demog, age_group_id != "0")
 
-pop_demog2 <- spread(pop_demog, key = 'age_group_description', value= 'total_households')
+pop_demog <- spread(pop_demog, key = 'age_group_description', value= 'total_households')
 
-pop_demog2 <- pop_demog2[,-c(1,4,6)]
+pop_demog <- pop_demog[,-c(1,4,6)]
 
 library(data.table)
-pop_demog3 <- setDT(pop_demog2)[, lapply(.SD, function(x) unique(na.omit(x))), by = "household_type_description"]
+pop_demog <- setDT(pop_demog)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
 
-#pop_demog3 <- setDT(pop_demog3)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
+CCMDs <- cbind(CCMDs, pop_demog)
 
-View(pop_demog)
-View(pop_demog2)
-View(pop_demog3)
+rm(pop_demog)
+```
+```{r}
+summary(CCMDs)
 
 ```
 
 ```{r}
-test <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/race-estimates-county.csv", col_names = TRUE, col_types = NULL))
-test <- arrange_all(test)
-test <- test[,-1]
+#test <- read_csv("https://storage.googleapis.com/co-publicdata/race-estimates-county.csv", col_names = TRUE, col_types = NULL)
+#getwd()
+#str(test)
 
-test <- subset(test, year >= "2014" & year <= "2017")
+#summary(test)
 
-test <- spread(test, key="race", value="count")
+#some light cleaning
+#test <- arrange_all(test)
+#test <- subset(test, year >= "2014" & year <= "2017")
 
-test <- test[, -9]
+#test <- spread(test, key="sex", value="count")
+#test <- spread(test, key="sex", value="count")
 
-View(test)
+#test <- test[, -c(1,5)]
+
+#library(data.table)
+#test <- setDT(test)[, lapply(.SD, function(x) unique(na.omit(x))), by = "county_fips"]
+
+#View(test)
 ```
-
-```{r}
-
-test2 <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/race-estimates-county.csv", col_names = TRUE, col_types = NULL))
-
-test2 <- arrange_all(test2)
-
-test2 <- test2[, -1]
-
-test2 <- subset(test2, year >= 2014 & year <= 2017)
-
-#test2 <- subset(test2, age >= 21 & age <= 75)
-
-test2 <- subset(test2, race != "Total")
-
-test2$sex <- factor(test2$sex)
-test2$race <- factor(test2$race)
-
-summary(test2)
-
-test3 <- spread(test2, key="race", value="count")
-#test4 <- spread(test2, key="sex", value="count")
-
-test3$age <- cut(test3$age, breaks=c(0, 21, 30, 40, 50, 60, 90), include.lowest = TRUE)
-
-summary(test3)
-
-View(test2)
-View(test3)
-#View(test4)
-
-
-```
-
-
-
-
-
-
-
-
 
 
 

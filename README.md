@@ -1,12 +1,16 @@
-# CO-Marijuana-Dataset<br>
+---
+output:
+  html_document: default
+---
+# CO Counties Marijuana Dataset<br>
 ## Purpose
 ## Data Collection and Processing Methodology<br>
 1.<br>
 2.<br>
 3.<br>
 
-## Dataset Description
-The CO-Marijuana-Dataset consists of 4+ years of Colorado Marijuana sales (medical and recreational) since the end of Colorado prohibition in January 2014 (beginning of recreational sales under CO Amendment 64).<br>
+## Datasets Description
+The Colorado Counties Marijuana Dataset (CCMDs.csv) consists of 4 years of Colorado medical and recreational Marijuana sales since the end of Colorado prohibition in January 2014 (beginning of recreational sales under CO Amendment 64).<br>
 
 The dataset consists of xxx observations of 11 features:<br>
 State - COLORADO<br>
