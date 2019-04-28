@@ -1,10 +1,9 @@
 ---
-title: "Building the Colorado County Marijuana Dataset"
+title: "Building and cleaning the Colorado County Marijuana Dataset"
 author: "David Martinez"
 date: "April 12, 2019"
 output:
   html_document: default
-  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -20,8 +19,6 @@ knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
 library("tidyr")
 library("readxl")
-library("DataExplorer")
-library("reshape2")
 ```
 
 ```{r}
@@ -58,12 +55,9 @@ housing_demog <- housing_demog[,-1]
 
 CCMDs <- cbind(co_mj, housing_demog)
 
-View(CCMDs)
-
 rm(co_mj)
 rm(housing_demog)
 
-summary(CCMDs)
 ```
 
 ```{r}
@@ -81,50 +75,17 @@ pop_demog <- spread(pop_demog, key = 'age_group_description', value= 'total_hous
 
 pop_demog <- pop_demog[,-c(1,4,6)]
 
-library(data.table)
+require(data.table)
 pop_demog <- setDT(pop_demog)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
 
 CCMDs <- cbind(CCMDs, pop_demog)
 
-rm(pop_demog)
-```
-```{r}
-summary(CCMDs)
+require(gtools)
+CCMDs <- smartbind(CCMDs, nr_mj)
+
+rm(pop_demog, nr_mj)
 
 ```
-
-```{r}
-#test <- read_csv("https://storage.googleapis.com/co-publicdata/race-estimates-county.csv", col_names = TRUE, col_types = NULL)
-#getwd()
-#str(test)
-
-#summary(test)
-
-#some light cleaning
-#test <- arrange_all(test)
-#test <- subset(test, year >= "2014" & year <= "2017")
-
-#test <- spread(test, key="sex", value="count")
-#test <- spread(test, key="sex", value="count")
-
-#test <- test[, -c(1,5)]
-
-#library(data.table)
-#test <- setDT(test)[, lapply(.SD, function(x) unique(na.omit(x))), by = "county_fips"]
-
-#View(test)
-```
-
-
-
-
-
-
-
-
-
-
-
 
 
 
