@@ -9,17 +9,20 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+# CO Counties Marijuana Dataset<br>
+## Purpose
+## Data Collection and Processing Methodology<br>
 
-<http://rmarkdown.rstudio.com>
-<https://www.analyticsvidhya.com/blog/2019/04/8-useful-r-packages-data-science/>
 
 
-```{r}
-#dependencies
-library("tidyverse")
-library("tidyr")
+
+```{r message=FALSE, warning=FALSE}
+#dependencies - if needed, these packages can be installed using the install.packages() function
 library("readxl")
 library("formattable")
+library("tidyverse")
+library("tidyr")
+
 ```
 
 ```{r}
@@ -27,78 +30,75 @@ library("formattable")
 sales_mj <- read_xlsx("CO_County_Sales_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
 taxes_mj <- read_xlsx("CO_County_Taxes_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
 
-co_mj <- merge(sales_mj, taxes_mj)
+CCMDs <- merge(sales_mj, taxes_mj)
 
-co_mj <- subset(co_mj, Year < "2018")
-nr_mj <- subset(co_mj, County == "Not Reported")
-co_mj <- subset(co_mj, County != "Not Reported")
-
-#Replace NR with NA 
-co_mj <- replace(co_mj, co_mj == "NR", NA)
+CCMDs <- subset(CCMDs, Year < "2018")
 
 #loop to convert sales/tax columns to numeric/currency
-cashcol <- colnames(co_mj[8:14])
+cashcol <- colnames(CCMDs[8:14])
 
-for (i in cashcol)
-  {
-  co_mj[[i]] <- as.numeric(co_mj[[i]])   #character to numeric
-  
-  co_mj[[i]] <- currency(co_mj[[i]], digits = 0L) #numeric but with symbology
-  }
+for (i in cashcol) {
+  CCMDs[[i]] <- as.numeric(CCMDs[[i]])   #character to numeric
+  CCMDs[[i]] <- currency(CCMDs[[i]], digits = 0L) #numeric but with symbology
+}
 
+#clean up unneeded files
 rm(cashcol, i)
-rm(sales_mj)
-rm(taxes_mj)
+rm(sales_mj, taxes_mj)
 
-summary(co_mj)
+```
+
+
+EDA
+```{r}
 
 ```
 
 
 ```{r}
 #retrieve file from https://storage.googleapis.com/co-publicdata/profiles-county.csv
-housing_demog <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/profiles-county.csv", col_names = TRUE, col_types = NULL))
+#housing_demog <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/profiles-county.csv", col_names = TRUE, col_types = NULL))
 
 #subset to retain only 2014-2017 data
-housing_demog <- subset(housing_demog, year >= "2014" & year <= "2017")
+#housing_demog <- subset(housing_demog, year >= "2014" & year <= "2017")
 
 #subset to retain only county information - colorado state information is stripped out
-housing_demog <- subset(housing_demog, countyfips > "0")
+#housing_demog <- subset(housing_demog, countyfips > "0")
 
 #remove first column as it provides no value for this exercise
-housing_demog <- housing_demog[,-1]
+#housing_demog <- housing_demog[,-1]
 
-CCMDs <- cbind(co_mj, housing_demog)
+#CCMDs <- cbind(co_mj, housing_demog)
 
-rm(co_mj)
-rm(housing_demog)
+#rm(co_mj)
+#rm(housing_demog)
 
 ```
 
 ```{r}
 #https://storage.googleapis.com/co-publicdata/household-county.csv
-pop_demog <- read_csv("https://storage.googleapis.com/co-publicdata/household-county.csv", col_names = TRUE, col_types = NULL)
+#pop_demog <- read_csv("https://storage.googleapis.com/co-publicdata/household-county.csv", col_names = TRUE, col_types = NULL)
 
-pop_demog <- subset(pop_demog, year >= "2014" & year <= "2017")
+#pop_demog <- subset(pop_demog, year >= "2014" & year <= "2017")
 
 #subset to retain only county information - colorado state information is stripped out
-pop_demog <- subset(pop_demog, area_code > "0")
-pop_demog <- subset(pop_demog, household_type_id <= "0")
-pop_demog <- subset(pop_demog, age_group_id != "0")
+#pop_demog <- subset(pop_demog, area_code > "0")
+#pop_demog <- subset(pop_demog, household_type_id <= "0")
+#pop_demog <- subset(pop_demog, age_group_id != "0")
 
-pop_demog <- spread(pop_demog, key = 'age_group_description', value= 'total_households')
+#pop_demog <- spread(pop_demog, key = 'age_group_description', value= 'total_households')
 
-pop_demog <- pop_demog[,-c(1,4,6)]
+#pop_demog <- pop_demog[,-c(1,4,6)]
 
-require(data.table)
-pop_demog <- setDT(pop_demog)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
+#require(data.table)
+#pop_demog <- setDT(pop_demog)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
 
-CCMDs <- cbind(CCMDs, pop_demog)
+#CCMDs <- cbind(CCMDs, pop_demog)
 
-require(gtools)
-CCMDs <- smartbind(CCMDs, nr_mj)
+#require(gtools)
+#CCMDs <- smartbind(CCMDs, nr_mj)
 
-rm(pop_demog, nr_mj)
+#rm(pop_demog, nr_mj)
 
 ```
 
@@ -106,9 +106,9 @@ rm(pop_demog, nr_mj)
 
 #str(CCMDs)
 
-CCMDs <- CCMDs[,-c(15:16,30:31)]
+#CCMDs <- CCMDs[,-c(15:16,30:31)]
 
-str(CCMDs)
+#str(CCMDs)
 
 #plot(CCMDs)
 ```
