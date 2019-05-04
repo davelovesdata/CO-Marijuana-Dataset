@@ -1,5 +1,5 @@
 ---
-title: "Building and cleaning the Colorado County Marijuana Dataset"
+title: "Building and cleaning the Colorado Counties Marijuana Dataset"
 author: "David Martinez"
 date: "April 12, 2019"
 output:
@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library("tidyverse")
 library("tidyr")
 library("readxl")
+library("formattable")
 ```
 
 ```{r}
@@ -32,6 +33,20 @@ co_mj <- subset(co_mj, Year < "2018")
 nr_mj <- subset(co_mj, County == "Not Reported")
 co_mj <- subset(co_mj, County != "Not Reported")
 
+#Replace NR with NA 
+co_mj <- replace(co_mj, co_mj == "NR", NA)
+
+#loop to convert sales/tax columns to numeric/currency
+cashcol <- colnames(co_mj[8:14])
+
+for (i in cashcol)
+  {
+  co_mj[[i]] <- as.numeric(co_mj[[i]])   #character to numeric
+  
+  co_mj[[i]] <- currency(co_mj[[i]], digits = 0L) #numeric but with symbology
+  }
+
+rm(cashcol, i)
 rm(sales_mj)
 rm(taxes_mj)
 
@@ -85,6 +100,17 @@ CCMDs <- smartbind(CCMDs, nr_mj)
 
 rm(pop_demog, nr_mj)
 
+```
+
+```{r}
+
+#str(CCMDs)
+
+CCMDs <- CCMDs[,-c(15:16,30:31)]
+
+str(CCMDs)
+
+#plot(CCMDs)
 ```
 
 
