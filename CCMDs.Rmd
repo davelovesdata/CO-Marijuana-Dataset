@@ -10,7 +10,9 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 # CO Counties Marijuana Dataset<br>
+
 ## Purpose
+
 ## Data Collection and Processing Methodology<br>
 
 
@@ -22,35 +24,47 @@ library("readxl")
 library("formattable")
 library("tidyverse")
 library("tidyr")
-
+library("ggplot2")
 ```
 
 ```{r}
-#gather sales and tax data
+#gather sales and tax data into tibbles
 sales_mj <- read_xlsx("CO_County_Sales_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
 taxes_mj <- read_xlsx("CO_County_Taxes_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
 
+#merge the two tibbles - {base} merge returns a dataframe
 CCMDs <- merge(sales_mj, taxes_mj)
 
+#temp - remove 2018 values until both spreadsheets are populated
 CCMDs <- subset(CCMDs, Year < "2018")
 
-#loop to convert sales/tax columns to numeric/currency
+#create a list of column names for columns 8 through 14 - these are the columns related to sales and taxes
 cashcol <- colnames(CCMDs[8:14])
 
+#loop to convert sales/tax columns to numeric/currency - this will introduce NAs for each of the 7 columns (resulting in a warning for each column)
 for (i in cashcol) {
   CCMDs[[i]] <- as.numeric(CCMDs[[i]])   #character to numeric
-  CCMDs[[i]] <- currency(CCMDs[[i]], digits = 0L) #numeric but with symbology
+  CCMDs[[i]] <- currency(CCMDs[[i]], digits = 0L) #numeric but with currency symbology
 }
 
 #clean up unneeded files
 rm(cashcol, i)
 rm(sales_mj, taxes_mj)
 
+#write dataframe to disk
+#write_excel_csv(CCMDs, "CCMDs.csv", na = "NA", append = FALSE)
+
 ```
 
 
-EDA
+##EDA
 ```{r}
+summary(CCMDs)
+
+#count the NAs (~9.5%)
+colSums(is.na(CCMDs))
+sum(is.na(CCMDs))
+
 
 ```
 
