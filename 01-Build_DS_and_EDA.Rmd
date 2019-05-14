@@ -10,26 +10,48 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ## Purpose
+To perform Exploratory Data Analysis on a dataset containing four years of Colorado county level medical and recreational marijuana sales as well as state revenue (taxes) collected. Two excel workbook sheets are imported to R and merged together, one for sales, the other for taxes. <br>
 
-The dataset consists of xxx observations of 11 features:<br>
-State - COLORADO<br>
-County - Colorado county name<br>
-Latitude - Latitude<br>
-Longitude - Longtitude<br>
-Region - Somewhat arbitrary assignment of county into NE, NW, SE, SW regions<br>
-Year - Year<br>
-Population - County Population<br>
-Med_Sales - Annual Medical Marijuana Sales by County<br>
-Rec_Sales - Annual Recreational Marijuana Sales by County<br>
-med_sales_per_citizen<br>
-rec_sales_per_citizen<br>
+#### 1. Sales file description (CO_County_Sales_2014_2018.xlsx)<br>
+The sales files contains not only county level medical and recreational sales by year, but also population information and location information (State, County, Latitude, Longitude, Region). Additionally, medical and recreational sales for each county were applied against county population to determine an average of sales per county citizen for both medical and recreational sales.<br>
 
-## Purpose
+**Dataset fields:**<br>
+State - Currently only "COLORADO"<br>
+County - Colorado County Name (e.g., "Adams" or "Yuma")<br>
+Latitude - Latitude of County center<br>
+Longitude - Longitude of County Center<br>
+Region - An arbitrary assignment I made to quarter the state into geographic quadrants.<br>
+Year - Collection Year<br>
+Population - Estimated population between census reporting periods<br>
+Med_Sales - County level sales of Medical Marijuana (see value explanation below)<br>
+Rec_Sales - County level sales of Recreational Marijuana (see value explanation below)<br>
+med_sales_per_citizen - a calculated value determined by dividing the "Med_Sales" value by the "Population" value.<br>
+rec_sales_pre_citizen - a calculated value determined by dividing the "Rec_Sales" value by the "Population" value.<br>
 
-## Data Collection and Processing Methodology<br>
+Med_Sales, Rec_sales, and the two calculated values have three possible values:<br>
+**0** = No Sales of legal Marijuana occurred in that county. The original source material did not include counties that had no sales. This information was added to show a full statewide picture as well as county adoption over time.<br> 
+**NR** = Not releasable due to confidentiality requirements. The sum of all NR counties ("Not Reported" in the 'County' column) are captured as the last line for each year.<br>
+**x** = A positive number representing sales at the dollar level.<br><br>
 
+#### 2. Taxes file description (CO_County_Taxes_2014_2018.xlsx)<br>
+The taxes file contains taxes collected per county in three columns: Medical Sales Tax (2.9%), Retail Sales Tax (2.9%), Retail Marijuana Special Sales Tax.
+
+**Dataset fields:**<br>
+County - Colorado County Name (e.g., "Adams" or "Yuma")<br>
+Year - Collection Year<br>
+Medical Sales Tax (2.9%) - Sales tax applied to medical marijuana only. This is the only state tax paid.
+Retail Sales Tax (2.9%) - Sales tax applied to retail marijuana. Starting in 2018, this tax was no longer collected.
+Retail Marijuana Special Sales Tax - an additional tax on retail marijuana sales.
+
+Medical Sales Tax (2.9%), Retail Sales Tax (2.9%), Retail Marijuana Special Sales Tax have three possible values:<br>
+**0** = No taxes from legal Marijuana occurred in that county. The original source material did not include counties that had no tax information. This information was added to show a full statewide picture as well as county adoption over time.<br> 
+**NR** = Not releasable due to confidentiality requirements. The sum of all NR counties ("Not Reported" in the 'County' column) are captured as the last line for each year.<br>
+**x** = A number representing taxes at the dollar level. Negative values indicate previous months overpayment of taxes being returned.<br><br>
+
+## Data Collection and Merging steps
+### Dependencies
+If needed, these packages can be installed using the install.packages() function
 ```{r message=FALSE, warning=FALSE}
-#dependencies - if needed, these packages can be installed using the install.packages() function
 library("readxl")
 library("formattable")
 library("tidyverse")
@@ -37,6 +59,8 @@ library("tidyr")
 library("ggplot2")
 ```
 
+### Collect and Merge data
+The two files are read into tibbles and then merged into a dataframe. Data is subsetted to remove 2018 values. A loop is performed to convert the sales and tax features to numeric and currency.
 ```{r}
 #gather sales and tax data into tibbles
 sales_mj <- read_xlsx("CO_County_Sales_2014_2018.xlsx", sheet = "aggregate", range = NULL, col_names = TRUE)
@@ -45,7 +69,7 @@ taxes_mj <- read_xlsx("CO_County_Taxes_2014_2018.xlsx", sheet = "aggregate", ran
 #merge the two tibbles - {base} merge returns a dataframe
 CCMDs <- merge(sales_mj, taxes_mj)
 
-#temp - remove 2018 values until both spreadsheets are populated
+#remove 2018 values until both spreadsheets are fully populated
 CCMDs <- subset(CCMDs, Year < "2018")
 
 #create a list of column names for columns 8 through 14 - these are the columns related to sales and taxes
@@ -62,84 +86,30 @@ rm(cashcol, i)
 rm(sales_mj, taxes_mj)
 
 #write dataframe to disk
-#write_excel_csv(CCMDs, "CCMDs.csv", na = "NA", append = FALSE)
+write_excel_csv(CCMDs, "CCMDs.csv", na = "NA", append = FALSE)
+
 ```
 
 
-##EDA
+## Exploratory Data Analysis
 ```{r}
 summary(CCMDs)
 
+```
+
+```{r}
 #count the NAs -  (~9.5% of the dataset are NA's)
 colSums(is.na(CCMDs))
 sum(is.na(CCMDs))
+
+```
+
+
+
 
 
 #corrplot the value features
 #m <- cor(CCMDs[, c(8:14)], use = "complete.obs", method = "spearman")
 #require("corrplot")
 #corrplot(m, type = "upper", order = "hclust", tl.srt = 45)
-
-```
-
-
-```{r}
-#retrieve file from https://storage.googleapis.com/co-publicdata/profiles-county.csv
-#housing_demog <- data.frame(read_csv("https://storage.googleapis.com/co-publicdata/profiles-county.csv", col_names = TRUE, col_types = NULL))
-
-#subset to retain only 2014-2017 data
-#housing_demog <- subset(housing_demog, year >= "2014" & year <= "2017")
-
-#subset to retain only county information - colorado state information is stripped out
-#housing_demog <- subset(housing_demog, countyfips > "0")
-
-#remove first column as it provides no value for this exercise
-#housing_demog <- housing_demog[,-1]
-
-#CCMDs <- cbind(co_mj, housing_demog)
-
-#rm(co_mj)
-#rm(housing_demog)
-
-```
-
-```{r}
-#https://storage.googleapis.com/co-publicdata/household-county.csv
-#pop_demog <- read_csv("https://storage.googleapis.com/co-publicdata/household-county.csv", col_names = TRUE, col_types = NULL)
-
-#pop_demog <- subset(pop_demog, year >= "2014" & year <= "2017")
-
-#subset to retain only county information - colorado state information is stripped out
-#pop_demog <- subset(pop_demog, area_code > "0")
-#pop_demog <- subset(pop_demog, household_type_id <= "0")
-#pop_demog <- subset(pop_demog, age_group_id != "0")
-
-#pop_demog <- spread(pop_demog, key = 'age_group_description', value= 'total_households')
-
-#pop_demog <- pop_demog[,-c(1,4,6)]
-
-#require(data.table)
-#pop_demog <- setDT(pop_demog)[, lapply(.SD, function(x) unique(na.omit(x))), by = "area_code"]
-
-#CCMDs <- cbind(CCMDs, pop_demog)
-
-#require(gtools)
-#CCMDs <- smartbind(CCMDs, nr_mj)
-
-#rm(pop_demog, nr_mj)
-
-```
-
-```{r}
-
-#str(CCMDs)
-
-#CCMDs <- CCMDs[,-c(15:16,30:31)]
-
-#str(CCMDs)
-
-#plot(CCMDs)
-```
-
-
 
