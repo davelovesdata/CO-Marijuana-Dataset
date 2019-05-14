@@ -52,7 +52,7 @@ rm(cashcol, i)
 rm(sales_mj, taxes_mj)
 
 #write dataframe to disk
-#write_excel_csv(CCMDs, "CCMDs.csv", na = "NA", append = FALSE)
+write_excel_csv(CCMDs, "CCMDs.csv", na = "NA", append = FALSE)
 
 ```
 
@@ -61,10 +61,15 @@ rm(sales_mj, taxes_mj)
 ```{r}
 summary(CCMDs)
 
-#count the NAs (~9.5%)
+#count the NAs -  (~9.5% of the dataset are NA's)
 colSums(is.na(CCMDs))
 sum(is.na(CCMDs))
 
+
+#corrplot the value features
+#m <- cor(CCMDs[, c(8:14)], use = "complete.obs", method = "spearman")
+#require("corrplot")
+#corrplot(m, type = "upper", order = "hclust", tl.srt = 45)
 
 ```
 
