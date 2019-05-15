@@ -96,15 +96,56 @@ write_excel_csv(CCMDs, "CCMDs.csv", na = "NA", append = FALSE)
 summary(CCMDs)
 
 ```
+<br>
+There are 260 observation with 14 variables. There are 346 NA's (~10%) that will need to be addressed. 
 
 ```{r}
-#count the NAs -  (~9.5% of the dataset are NA's)
-colSums(is.na(CCMDs))
+#count the NAs
 sum(is.na(CCMDs))
 
+#remove the NAs
+CCMDs <- na.omit(CCMDs)
+
+plot(CCMDs[,7:14])
+```
+<br>Right from the start, some of the data is redundant. Specifically, the 'med_sales_per_citizen' and 'rec_sales_per_citizen' variables which are calculated by dividing the county sales by the county population. 
+
+```{r}
+#subset out the two duplicative columns
+CCMDs <- CCMDs[, -c(10:11)]
+plot(CCMDs[,7:12])
 ```
 
+```{r}
+#disable scientific notation
+options(scipen = 999)
 
+CCMDs_pop <- CCMDs[, c(1,2,7)]
+CCMDs_pop$County <- as.factor(CCMDs_pop$County)
+CCMDs_pop <- CCMDs_pop[order(CCMDs_pop$Population),]
+
+str(CCMDs_pop)
+
+#CCMDs_pop <- CCMDs_pop[order(CCMDs_pop$Population),]
+
+View(CCMDs_pop)
+
+#CCMDs_pop <- data.frame(order(CCMDs_pop$Population))
+
+ggplot(data=CCMDs_pop, mapping=aes(x=County, y=Population))+
+  geom_bar(stat="identity", position="dodge", fill="blue")+
+  labs(title="Colorado Population by County", x= "County", y= "Population")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
+ggplot(data=CCMDs_pop, aes(x=as.factor(CCMDs_pop$County)))+
+  geom_boxplot(aes(y=Population), color="blue")+
+  labs(title="Colorado Population by County", x= "County", y= "Population")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
+
+```
 
 
 

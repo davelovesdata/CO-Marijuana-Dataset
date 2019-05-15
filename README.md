@@ -54,7 +54,6 @@ Medical Sales Tax (2.9%), Retail Sales Tax (2.9%), Retail Marijuana Special Sale
 **x** = A number representing taxes at the dollar level. Negative values indicate previous months overpayment of taxes being returned.<br><br>
 
 ## Exploratory Data Analysis (in progress)<br>
-## Visualizations<br>
-## MLR <br>
+
 ## External Sources <br>
 ## References <br>
