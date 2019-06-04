@@ -57,6 +57,7 @@ library("formattable")
 library("tidyverse")
 library("tidyr")
 library("ggplot2")
+library("ggrepel")
 ```
 
 ### Collect and Merge data
@@ -108,17 +109,65 @@ CCMDs <- na.omit(CCMDs)
 
 plot(CCMDs[,7:14])
 ```
-<br>Right from the start, some of the data is redundant. Specifically, the 'med_sales_per_citizen' and 'rec_sales_per_citizen' variables which are calculated by dividing the county sales by the county population. 
+<br>Right from the start, some of the data is redundant. Specifically, the 'med_sales_per_citizen' and 'rec_sales_per_citizen' variables which are calculated by dividing the county sales by the county population. Similarly, the tax data is also a function of the sales data. For now, I'm going to ignore that data.
 
 ```{r}
-#subset out the two duplicative columns
-CCMDs <- CCMDs[, -c(10:11)]
-plot(CCMDs[,7:12])
+library(corrplot)
+#subset out unnecessary columns
+plot(CCMDs[,7:9])
+
+#corrplot the value features
+m <- cor(CCMDs[, c(7:9)], use = "complete.obs", method = "spearman")
+corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 ```
 
 ```{r}
 #disable scientific notation
 options(scipen = 999)
+
+#table(CCMDs[, 1,8:9])
+
+#filter by year
+
+ggplot(data=CCMDs, aes(x = Population))+
+  geom_point(aes(y = Rec_Sales/100000), color="green", show.legend = TRUE, size = 1.25)+
+  geom_point(aes(y = Med_Sales/100000), color="red", show.legend = TRUE, size = 1.25)+
+  labs(title="Medical and Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
+  theme_bw()+
+  coord_flip()
+
+ggplot(data=CCMDs, aes(x = Population))+
+  geom_point(aes(y = Rec_Sales/100000), color="green", show.legend = TRUE, size = 1.25)+
+  labs(title="Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
+  theme_bw()+
+  coord_flip()
+
+ggplot(data=CCMDs, aes(x = Population))+
+  geom_point(aes(y = Med_Sales/100000), color="red", show.legend = TRUE, size = 1.25)+
+  labs(title="Medical Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
+  theme_bw()+
+  coord_flip()
+```
+
+ggplot(data=CCMDs, mapping=aes(x=Year))+
+  geom_col(mapping=aes(y=Rec_Sales/100000), position=position_dodge(), fill="green")+
+  geom_col(mapping=aes(y=Med_Sales/100000), position=position_dodge() , fill="red")+
+  labs(title="Colorado Medical and Retail Marijuana Sales 2014-2018", x= "Years of Recreational Legalization", y= "Sales per $100K")+
+  theme_bw()
+
+ggplot(data=CCMDs, aes(x=as.factor(CCMDs$County)))+
+  geom_boxplot(aes(y=Rec_Sales), color="green")+
+  geom_boxplot(aes(y=Med_Sales), color="red")+
+  labs(title="Colorado Retail and Medical Marijuana Sales since 2014", x= "Colorado County", y= "Sales")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplot(data=CCMDs, mapping=aes(x=Year))+
+  geom_jitter(aes(y=Rec_Sales), color="green")+
+  geom_jitter(aes(y=Med_Sales), color="red")+
+  labs(title="Colorado Medical and Retail Marijuana Sales 2014-2018", x= "Years of Recreational Legalization", y= "Sales per $100K")+
+  theme_bw()
+
 
 CCMDs_pop <- CCMDs[, c(1,2,7)]
 CCMDs_pop$County <- as.factor(CCMDs_pop$County)
@@ -129,6 +178,14 @@ str(CCMDs_pop)
 #CCMDs_pop <- CCMDs_pop[order(CCMDs_pop$Population),]
 
 View(CCMDs_pop)
+
+#ggplot(data=CCMDs, mapping=aes(x=Year, y=Population, group=Region))+
+#  geom_line(color="red")+
+#  geom_point(color="red")+
+#  scale_y_continuous(limits = c(min(CCMDs$Population), max(CCMDs$Population)))+
+#   geom_label_repel(aes(label = Population), nudge_x = 1)+
+#  labs(title="Colorado Estimated Population Growth since 2010 Census")+
+#  theme_bw()
 
 #CCMDs_pop <- data.frame(order(CCMDs_pop$Population))
 
