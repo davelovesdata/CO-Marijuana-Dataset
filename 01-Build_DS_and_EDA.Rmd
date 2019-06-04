@@ -109,7 +109,7 @@ CCMDs <- na.omit(CCMDs)
 
 plot(CCMDs[,7:14])
 ```
-<br>Right from the start, some of the data is redundant. Specifically, the 'med_sales_per_citizen' and 'rec_sales_per_citizen' variables which are calculated by dividing the county sales by the county population. Similarly, the tax data is also a function of the sales data. For now, I'm going to ignore that data.
+<br>Right from the start, the data are redundant. Specifically, the 'med_sales_per_citizen' and 'rec_sales_per_citizen' variables which are calculated by dividing the county sales by the county population. Similarly, the tax data is also a function of the sales data. For now, I'm going to ignore that data.
 
 ```{r}
 library(corrplot)
@@ -120,6 +120,7 @@ plot(CCMDs[,7:9])
 m <- cor(CCMDs[, c(7:9)], use = "complete.obs", method = "spearman")
 corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 ```
+<br>Of course, it makes sense that population would correlate to sales and that med/rec sales would correlate so highly. 
 
 ```{r}
 #disable scientific notation
@@ -148,6 +149,18 @@ ggplot(data=CCMDs, aes(x = Population))+
   theme_bw()+
   coord_flip()
 ```
+<br> Four clusters are immediately evident (low pop/low sales, med pop/low sales, high pop/low sales, and high pop/high sales). Cluster analysis will need to be performed.
+
+
+
+
+
+
+
+
+
+
+spare...
 
 ggplot(data=CCMDs, mapping=aes(x=Year))+
   geom_col(mapping=aes(y=Rec_Sales/100000), position=position_dodge(), fill="green")+
