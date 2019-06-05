@@ -159,19 +159,21 @@ ggplot(data=CCMDs, aes(x = Population, color=cluster))+
   labs(title="Medical and Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
   theme_bw()+
   coord_flip()
+```
+<br> The clusters didn't line up exactly as I expected but were grossly right. I'll try drawing ellipses around the clusters.
 
-
-#interesting failure... I need to disect this.
-ggplot(data=CCMDs_scale, aes(x = Population, color=cluster))+
-  geom_point(shape=25, aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
+```{r}
+ggplot(data=CCMDs, aes(x = Population, color=cluster))+
+  geom_point(aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
   geom_smooth(aes(y=Rec_Sales/100000))+
-  geom_point(shape=15, aes(y = Med_Sales/100000), show.legend = TRUE, size = 1.25)+
+  geom_point(aes(y = Med_Sales/100000), show.legend = TRUE, size = 1.25)+
   geom_smooth(aes(y=Med_Sales/100000))+
   labs(title="Medical and Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
   theme_bw()+
   coord_flip()
 ```
-<br> The clusters didn't line up exactly as I expected but were grossly right. I think next I should try the same exercise with Principal Component Analysis (PCA). I'm interested in the eigenvector values.
+A lot of warnings that I need to disect. The cluster smothing pattern goes beyond -1 (I think) due to using the mean instead of the median. I think I can fix that. Also, I think a next step should be try the same exercise as above with Principal Component Analysis (PCA). I'm interested in the eigenvector values...
+
 
 ref: http://rpubs.com/sinhrks/plot_pca
 <br>
