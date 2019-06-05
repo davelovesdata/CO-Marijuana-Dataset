@@ -3,8 +3,8 @@ title: "Exploratory Data Analysis on the CO_County_x_2014_2018.xlxs"
 author: "David Martinez (davelovesdata@gmail.com)"
 date: "May 7, 2019"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -142,20 +142,34 @@ ggplot(data=CCMDs, aes(x = Population))+
 <br> Four clusters seem to be immediately evident (low pop/low sales, med pop/low sales, high pop/low sales, and high pop/higher sales starting around 1000K). Cluster analysis will need to be performed to validate optimal cluster size and groupings.
 
 ```{r}
+#https://www.r-bloggers.com/finding-optimal-number-of-clusters/
+
+
 #first scale and sequester the data fields of interest into a matrix. 
 CCMDs_scale <- scale(CCMDs[,7:9])
 
 #use elbow method to determine optimal number of clusters
 set.seed(12345)
 
+#set the max number of clusters
 k.max <- 15
-data <- CCMDs_scale
 
-wss <- sapply(1:k.max, function(k){kmeans(data, k, nstart=50, iter.max=15)$tot.withinss})
+#generate within-cluster sum of squares
+wss <- sapply(1:k.max, function(k){kmeans(CCMDs_scale, k, nstart=50, iter.max=15)$tot.withinss})
 
 #generate elbow plot
 plot(1:k.max, wss, type="b", pch=19, frame=FALSE, xlab="number of clusters K", ylab="Total within-clusters sum of squares")
+```
+<br> It seems that three clusters was the magic number. I'll also use NbClust to additionally validate the number of clusters. NbClust uses multiple indices to determine the number of clusters and most optimal clustering scheme.  
 
+```{r}
+#install.packages("NbClust", dependencies=TRUE)
+library(NbClust)
+nb <- NbClust(CCMDs_scale, diss=NULL, distance="euclidean", min.nc=2, max.nc = 15, method="kmeans", index="all", alphaBeale = 0.1)
+hist(nb$Best.nc[1,], breaks = max(na.omit(nb$Best.nc[1,])))
+```
+<br> three clusters it is. 
+```{r}
 #use kmeans to perform cluster identification
 cluster <- kmeans(CCMDs_scale, centers=3, iter.max=50, nstart=5)
 
@@ -172,25 +186,23 @@ ggplot(data=CCMDs, aes(x = Population, color=cluster))+
   theme_bw()+
   coord_flip()
 ```
-<br> The clusters didn't line up exactly as I expected but were grossly right. I'll try drawing ellipses around the clusters.
+<br> It seems that three clusters was the magic number. One question becomes immediately obvious. Why are there areas with a high population (>600K) but low sales? This will need to be further investigated.
 
 ```{r}
 ggplot(data=CCMDs, aes(x = Population, color=cluster))+
   geom_point(aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
   stat_ellipse(aes(y = Rec_Sales/100000))+
-  geom_smooth(aes(y=Rec_Sales/100000))+
   geom_point(aes(y = Med_Sales/100000), show.legend = TRUE, size = 1.25)+
   stat_ellipse(aes(y = Med_Sales/100000))+
-  geom_smooth(aes(y=Med_Sales/100000))+
   labs(title="Medical and Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
   theme_bw()+
   coord_flip()
 
-ggplot(data=CCMDs, aes(x = Population, color=cluster))+
-  geom_point(aes(y = Rec_Sales/100000 + Med_Sales/100000), show.legend = TRUE, size = 1.25)+
-  stat_ellipse(aes(y = Rec_Sales/100000 + Med_Sales/100000))+
-  theme_bw()+
-  coord_flip()
+#ggplot(data=CCMDs, aes(x = Population, color=cluster))+
+#  geom_point(aes(y = Rec_Sales/100000 + Med_Sales/100000), show.legend = TRUE, size = 1.25)+
+#  stat_ellipse(aes(y = Rec_Sales/100000 + Med_Sales/100000))+
+#  theme_bw()+
+#  coord_flip()
 ```
 A lot of warnings that I need to disect. The cluster smoothing pattern goes beyond -1 (I think) due to using the mean instead of the median. I think I can fix that. Also, I think a next step should be try the same exercise as above with Principal Component Analysis (PCA). I'm interested in the eigenvector values...
 
