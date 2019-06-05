@@ -137,6 +137,54 @@ ggplot(data=CCMDs, aes(x = Population))+
   theme_bw()+
   coord_flip()
 
+```
+<br> Four clusters seem to be immediately evident (low pop/low sales, med pop/low sales, high pop/low sales, and high pop/higher salesstarting around 1000K). Cluster analysis will need to be performed.
+
+```{r}
+#first scale and sequester the data fields of interest into a new dataframe. 
+CCMDs_scale <- data.frame(scale(CCMDs[,7:9]))
+
+#use kmeans to perform cluster identification
+cluster <- kmeans(CCMDs_scale, centers=4, iter.max=50, nstart=5)
+
+#bind the cluster field to to the values from scale
+cluster <- cluster$cluster
+
+#convert cluster number to factor
+cluster <- as.factor(cluster)
+
+ggplot(data=CCMDs, aes(x = Population, color=cluster))+
+  geom_point(shape=25, aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
+  geom_point(shape=15, aes(y = Med_Sales/100000), show.legend = TRUE, size = 1.25)+
+  labs(title="Medical and Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
+  theme_bw()+
+  coord_flip()
+
+
+#interesting failure... I need to disect this.
+ggplot(data=CCMDs_scale, aes(x = Population, color=cluster))+
+  geom_point(shape=25, aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
+  geom_smooth(aes(y=Rec_Sales/100000))+
+  geom_point(shape=15, aes(y = Med_Sales/100000), show.legend = TRUE, size = 1.25)+
+  geom_smooth(aes(y=Med_Sales/100000))+
+  labs(title="Medical and Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
+  theme_bw()+
+  coord_flip()
+```
+<br> The clusters didn't line up exactly as I expected but were grossly right. I think next I should try the same exercise with Principal Component Analysis (PCA). I'm interested in the eigenvector values.
+
+ref: http://rpubs.com/sinhrks/plot_pca
+<br>
+<br>
+<br>
+
+
+
+
+
+spare or inwork stuff...
+
+
 ggplot(data=CCMDs, aes(x = Population))+
   geom_point(aes(y = Rec_Sales/100000), color="green", show.legend = TRUE, size = 1.25)+
   labs(title="Retail Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
@@ -148,19 +196,6 @@ ggplot(data=CCMDs, aes(x = Population))+
   labs(title="Medical Marijuana Sales as a measure of population", x= "Colorado County Population", y= "Marijuana Sales per $100K")+
   theme_bw()+
   coord_flip()
-```
-<br> Four clusters are immediately evident (low pop/low sales, med pop/low sales, high pop/low sales, and high pop/high sales). Cluster analysis will need to be performed.
-
-
-
-
-
-
-
-
-
-
-spare...
 
 ggplot(data=CCMDs, mapping=aes(x=Year))+
   geom_col(mapping=aes(y=Rec_Sales/100000), position=position_dodge(), fill="green")+
