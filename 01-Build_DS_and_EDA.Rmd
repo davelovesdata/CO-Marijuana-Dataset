@@ -172,7 +172,7 @@ ggplot(data=CCMDs, aes(x = Population, color=cluster))+
   theme_bw()+
   coord_flip()
 ```
-A lot of warnings that I need to disect. The cluster smothing pattern goes beyond -1 (I think) due to using the mean instead of the median. I think I can fix that. Also, I think a next step should be try the same exercise as above with Principal Component Analysis (PCA). I'm interested in the eigenvector values...
+A lot of warnings that I need to disect. The cluster smoothing pattern goes beyond -1 (I think) due to using the mean instead of the median. I think I can fix that. Also, I think a next step should be try the same exercise as above with Principal Component Analysis (PCA). I'm interested in the eigenvector values...
 
 
 ref: http://rpubs.com/sinhrks/plot_pca
