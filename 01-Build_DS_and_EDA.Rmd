@@ -124,6 +124,22 @@ corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 <br>Of course, it makes sense that population would correlate to sales and that med/rec sales would correlate so highly to each other. 
 
 ```{r}
+
+View(CCMDs_f1)
+
+CCMDs_f1 <- filter(CCMDs, Med_Sales != 0 | Rec_Sales != 0) 
+CCMDs_f2 <- filter(CCMDs, Med_Sales == 0 & Rec_Sales == 0)
+
+ggplot(data=CCMDs_f1, aes(x=as.factor(County)))+
+  geom_boxplot(aes(y=Rec_Sales/100000), color="green")+
+  geom_boxplot(aes(y=Med_Sales/100000), color="red")+
+  labs(title="Colorado Retail and Medical Marijuana Sales since 2014", x= "Colorado County", y= "Sales")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+```{r}
 #disable scientific notation
 options(scipen = 999)
 
