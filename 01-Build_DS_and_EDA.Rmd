@@ -3,8 +3,8 @@ title: "Exploratory Data Analysis on the CO_County_x_2014_2018.xlxs"
 author: "David Martinez (davelovesdata@gmail.com)"
 date: "May 7, 2019"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -125,7 +125,7 @@ corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 
 ```{r}
 
-View(CCMDs_f1)
+#View(CCMDs_f1)
 
 CCMDs_f1 <- filter(CCMDs, Med_Sales != 0 | Rec_Sales != 0) 
 CCMDs_f2 <- filter(CCMDs, Med_Sales == 0 & Rec_Sales == 0)
