@@ -125,8 +125,6 @@ corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 
 ```{r}
 
-#View(CCMDs_f1)
-
 CCMDs_f1 <- filter(CCMDs, Med_Sales != 0 | Rec_Sales != 0) 
 CCMDs_f2 <- filter(CCMDs, Med_Sales == 0 & Rec_Sales == 0)
 
@@ -205,6 +203,9 @@ ggplot(data=CCMDs, aes(x = Population/1000, color=cluster))+
 <br> It seems that three clusters was the magic number. One question becomes immediately obvious. Why are there areas with a high population (>600K) but low sales? This will need to be further investigated.
 
 ```{r}
+CCMDs_f3 <- filter(CCMDs, Population > 600000)
+View(CCMDs_f3)
+
 ggplot(data=CCMDs, aes(x = Population/1000, color=cluster))+
   geom_point(aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
   stat_ellipse(aes(y = Rec_Sales/100000))+
