@@ -128,10 +128,20 @@ corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 CCMDs_f1 <- filter(CCMDs, Med_Sales != 0 | Rec_Sales != 0) 
 CCMDs_f2 <- filter(CCMDs, Med_Sales == 0 & Rec_Sales == 0)
 
+View(CCMDs_f1)
+CCMDs_f1 <- CCMDs_f1[order(CCMDs_f1$Population),]
+
+ggplot(data=CCMDs_f1, aes(x=as.factor(Year)))+
+  geom_boxplot(aes(y=Rec_Sales), color="green", show.legend=TRUE)+
+  geom_boxplot(aes(y=Med_Sales), color="red", show.legend=TRUE)+
+  labs(title="Aggregate Colorado Retail and Medical Marijuana Sales since 2014 by County", x= "Colorado County", y= "Sales")+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle = 90))
+
 ggplot(data=CCMDs_f1, aes(x=as.factor(County)))+
-  geom_boxplot(aes(y=Rec_Sales/100000), color="green")+
-  geom_boxplot(aes(y=Med_Sales/100000), color="red")+
-  labs(title="Colorado Retail and Medical Marijuana Sales since 2014", x= "Colorado County", y= "Sales")+
+  geom_boxplot(aes(y=Rec_Sales/100000), color="green", show.legend=TRUE)+
+  geom_boxplot(aes(y=Med_Sales/100000), color="red", show.legend=TRUE)+
+  labs(title="Aggregate Colorado Retail and Medical Marijuana Sales since 2014 by County", x= "Colorado County", y= "Sales")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
 
@@ -174,12 +184,12 @@ wss <- sapply(1:k.max, function(k){kmeans(CCMDs_scale, k, nstart=50, iter.max=15
 #generate elbow plot
 plot(1:k.max, wss, type="b", pch=19, frame=FALSE, xlab="number of clusters K", ylab="Total within-clusters sum of squares")
 ```
-<br> It seems that three clusters was the magic number. I'll also use NbClust to additionally validate the number of clusters. NbClust uses multiple indices to determine the number of clusters and most optimal clustering scheme.  
+<br> It seems that three clusters was the magic number. I'll also use NbClust to additionally validate the number of clusters. NbClust uses multiple indices to determine the number of clusters and most optimal clustering scheme. Optimal clusters are by determining the amount of variation between the data points. 
 
 ```{r}
 #install.packages("NbClust", dependencies=TRUE)
 library(NbClust)
-nb <- NbClust(CCMDs_scale, distance="euclidean", min.nc=2, max.nc = 15, method="kmeans", index="all", alphaBeale = 0.1)
+nb <- NbClust(CCMDs_scale, distance="euclidean", min.nc=2, max.nc = 5, method="kmeans", index="all", alphaBeale = 0.1)
 hist(nb$Best.nc[1,], breaks = max(na.omit(nb$Best.nc[1,])))
 ```
 <br> three clusters it is. 
@@ -305,12 +315,12 @@ ggplot(data=CCMDs_pop, aes(x=as.factor(CCMDs_pop$County)))+
   theme(axis.text.x = element_text(angle = 90))
 
 
-```
-
-
-
 #corrplot the value features
 #m <- cor(CCMDs[, c(8:14)], use = "complete.obs", method = "spearman")
 #require("corrplot")
 #corrplot(m, type = "upper", order = "hclust", tl.srt = 45)
+
+
+
+
 
