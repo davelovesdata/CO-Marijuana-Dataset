@@ -128,20 +128,22 @@ corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 CCMDs_f1 <- filter(CCMDs, Med_Sales != 0 | Rec_Sales != 0) 
 CCMDs_f2 <- filter(CCMDs, Med_Sales == 0 & Rec_Sales == 0)
 
-View(CCMDs_f1)
-CCMDs_f1 <- CCMDs_f1[order(CCMDs_f1$Population),]
+
+#CCMDs_f1 <- CCMDs_f1 %>% arrange(Population)
+
+#View(CCMDs_f1)
 
 ggplot(data=CCMDs_f1, aes(x=as.factor(Year)))+
-  geom_boxplot(aes(y=Rec_Sales), color="green", show.legend=TRUE)+
-  geom_boxplot(aes(y=Med_Sales), color="red", show.legend=TRUE)+
-  labs(title="Aggregate Colorado Retail and Medical Marijuana Sales since 2014 by County", x= "Colorado County", y= "Sales")+
+  geom_boxplot(aes(y=Rec_Sales/100000), color="green", show.legend=TRUE)+
+  geom_boxplot(aes(y=Med_Sales/100000), color="red", show.legend=TRUE)+
+  labs(title="Aggregate Retail and Medical Marijuana Sales since 2014 by Year", x= "Year", y= "Sales")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
 
 ggplot(data=CCMDs_f1, aes(x=as.factor(County)))+
   geom_boxplot(aes(y=Rec_Sales/100000), color="green", show.legend=TRUE)+
   geom_boxplot(aes(y=Med_Sales/100000), color="red", show.legend=TRUE)+
-  labs(title="Aggregate Colorado Retail and Medical Marijuana Sales since 2014 by County", x= "Colorado County", y= "Sales")+
+  labs(title="Aggregate Retail and Medical Marijuana Sales since 2014 by County", x= "County", y= "Sales per $100K")+
   theme_bw()+
   theme(axis.text.x = element_text(angle = 90))
 
