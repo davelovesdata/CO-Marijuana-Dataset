@@ -128,11 +128,6 @@ corrplot(m, method="number", type = "lower", order = "hclust", tl.srt = 45)
 CCMDs_f1 <- filter(CCMDs, Med_Sales != 0 | Rec_Sales != 0) 
 CCMDs_f2 <- filter(CCMDs, Med_Sales == 0 & Rec_Sales == 0)
 
-
-#CCMDs_f1 <- CCMDs_f1 %>% arrange(Population)
-
-#View(CCMDs_f1)
-
 ggplot(data=CCMDs_f1, aes(x=as.factor(Year)))+
   geom_boxplot(aes(y=Rec_Sales/100000), color="green", show.legend=TRUE)+
   geom_boxplot(aes(y=Med_Sales/100000), color="red", show.legend=TRUE)+
@@ -216,7 +211,6 @@ ggplot(data=CCMDs, aes(x = Population/1000, color=cluster))+
 
 ```{r}
 CCMDs_f3 <- filter(CCMDs, Population > 600000)
-View(CCMDs_f3)
 
 ggplot(data=CCMDs, aes(x = Population/1000, color=cluster))+
   geom_point(aes(y = Rec_Sales/100000), show.legend = TRUE, size = 1.25)+
