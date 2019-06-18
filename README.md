@@ -53,7 +53,3 @@ Medical Sales Tax (2.9%), Retail Sales Tax (2.9%), Retail Marijuana Special Sale
 **NR** = Not releasable due to confidentiality requirements. The sum of all NR counties ("Not Reported" in the 'County' column) are captured as the last line for each year.<br>
 **x** = A number representing taxes at the dollar level. Negative values indicate previous months overpayment of taxes being returned.<br><br>
 
-## Exploratory Data Analysis (in progress)<br>
-
-## External Sources <br>
-## References <br>
